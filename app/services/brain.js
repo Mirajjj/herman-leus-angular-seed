@@ -5,91 +5,182 @@
     /* Services */
     var services = angular.module('mainModule.services', []);
 
-    services.factory('brainFactory', function () {
-        var Brain = function (items) {
+    services.factory('brainFactory', ['$q', '$http', '$templateCache', function ($q, $http, $templateCache) {
+        var Brain = function (canvas) {
             var self = this,
-                _loadedItems = items,
+                _loadedItems = [],
                 _mainCenterItem,
-                createItem,
-                moveItemByPath,
-                generatePath,
-                getRandomInt,
-                groupWithBackground,
-                getBlinkingEventFunc,
-                draw2LevelAnimation;
+                _brainBG,
+                _images = [],
+                internal =  {};
+
+            paper.setup(canvas);
 
             self.getItems = function () {
                 return _loadedItems;
             };
 
             self.init = function () {
+                var updateFunc,
+                    hoverFunc;
+
+                _images[0].visible = true;
+                _brainBG = internal.attachCompoundPath(paper.project.importSVG(_loadedItems[0]), _images[0]);
                 _mainCenterItem = new paper.Group([paper.project.importSVG(_loadedItems[0]), paper.project.importSVG(_loadedItems[1])]);
+
                 _mainCenterItem.name = 'loaderCenterItem';
-                _mainCenterItem.scale(0.2);
+                _mainCenterItem.scale(0.4);
                 _mainCenterItem.position.x = paper.view.size.width / 2 - (_mainCenterItem.bounds.width / 2) * 0.2;
                 _mainCenterItem.position.y = paper.view.size.height / 2 - (_mainCenterItem.bounds.height / 2) * 0.2;
-                _mainCenterItem.children[0].fillColor = '#fff';
+                _mainCenterItem.children[0].visible = false;
 
-                //draw2LevelAnimation();
+                _brainBG.scale(0.39);
+                _brainBG.position.x = paper.view.size.width / 2 - (_brainBG.bounds.width / 2) * 0.2;
+                _brainBG.position.y = paper.view.size.height / 2 - (_brainBG.bounds.height / 2) * 0.2;
+
+                updateFunc = self.getUpdateFunctions().center;
+                hoverFunc =  self.getUpdateFunctions().changeImages;
+
+                paper.view.onFrame = function (event) {
+                    updateFunc(event, 1, 3);
+                    hoverFunc(event);
+                };
             };
 
-            self.getUpdateFunctions = function () {
-                var timeElapsed = 0,
-                    centerItemEnLarge = true,
-                    centerItemMinSize = {
-                        width: _mainCenterItem.bounds.width,
-                        height: _mainCenterItem.bounds.height,
-                        x: _mainCenterItem.bounds.x,
-                        y: _mainCenterItem.bounds.y
-                    },
-                    flyingItemFunc = [];
+            internal.setFiles = function (func) {
+                $q.all({
+                    svgBrainBackground: $http.get('images/vector/brainBackground.svg'),
+                    svgBrain:  $http.get('images/vector/brain.svg'),
+                    svgLamp:  $http.get('images/vector/ideaLamp.svg')
+                }).then(function (values) {
+                    var key;
 
+                    for (key in values) {
+                        if (key.indexOf('svg') > -1) {
+                            _loadedItems.push(values[key].data);
+                        }
+                    }
+
+                    internal.setImages();
+                    func();
+                });
+            };
+
+            internal.setImage = function (src) {
+                var raster = new paper.Raster({
+                    source: src,
+                    position: paper.view.center
+                });
+
+                raster.visible = false;
+
+                _images.push(raster);
+
+                return raster;
+            };
+
+            internal.setImages = function () {
+                internal.setImage('images/raster/brainMasks/mask1.jpg');
+                internal.setImage('images/raster/brainMasks/mask2.jpg');
+                internal.setImage('images/raster/brainMasks/mask3.jpg');
+                internal.setImage('images/raster/brainMasks/mask4.jpg');
+                internal.setImage('images/raster/brainMasks/mask5.jpg');
+            };
+
+            internal.attachCompoundPath = function (path, raster) {
+                var compoundPath,
+                    group;
+
+                path.position.x = paper.view.size.width / 2 - (path.bounds.width / 2) * 0.2;
+                path.position.y = paper.view.size.height / 2 - (path.bounds.height / 2) * 0.2;
+
+                compoundPath = new paper.CompoundPath(path);
+
+                group = new paper.Group([compoundPath, raster]);
+                //group.clipMask = true;
+                group.clipped = true;
+
+                path.getGroup = function () {
+                    return group;
+                };
+
+                return path;//_compoundPathGroups.push(group);
+            };
+
+            internal.actions = {};
+            internal.actions.brain = {};
+            internal.actions.brain.currentPlay = 0;
+            internal.actions.brain.scenario = [
+                function () {
+                    //Normal Enlarging
+                    _mainCenterItem.scale(internal.actions.brain.config.scaleInc);
+                    _brainBG.scale(internal.actions.brain.config.scaleInc);
+
+                    if (_mainCenterItem.bounds.width  >= internal.actions.brain.config.breakPointWidth) {
+                        internal.actions.brain.config.timeElapsed  = 0;
+                        internal.actions.brain.currentPlay++;
+                    }
+                },
+                function (flyingItemFunc) {
+                    //Quick Enlarging
+                    _mainCenterItem.scale(internal.actions.brain.config.scaleIncX2);
+                    _brainBG.scale(internal.actions.brain.config.scaleIncX2);
+
+                    if (_mainCenterItem.bounds.width  >= internal.actions.brain.config.maxWidth) {
+                        internal.actions.brain.config.timeElapsed  = 0;
+                        internal.actions.brain.currentPlay++;
+
+                        flyingItemFunc.push(internal.moveItemByPath(internal.generatePath(), internal.createItem(2)));
+                    }
+                },
+                function () {
+                    //Quick Size Decrease
+
+                    _mainCenterItem.scale(internal.actions.brain.config.scaleDecX2);
+                    _brainBG.scale(internal.actions.brain.config.scaleDecX2);
+
+                    if (_mainCenterItem.bounds.width  <= internal.actions.brain.config.breakPointWidth) {
+                        internal.actions.brain.config.timeElapsed  = 0;
+                        internal.actions.brain.currentPlay++;
+                    }
+                },
+                function () {
+                    //Normal Size Decrease
+                    _mainCenterItem.scale(internal.actions.brain.config.scaleDec);
+                    _brainBG.scale(internal.actions.brain.config.scaleDec);
+
+                    if (_mainCenterItem.bounds.width  <= internal.actions.brain.config.minWidth) {
+                        internal.actions.brain.config.timeElapsed  = 0;
+                        internal.actions.brain.currentPlay = 0;
+                    }
+                },
+                function () {
+
+                }
+            ];
+
+            self.getUpdateFunctions = function () {
+                var flyingItemFunc = [],
+                    timeElapsed = 0,
+                    imageIndex = 0;
+
+                internal.actions.brain.config = {
+                    timeElapsed: 0,
+                    scaleInc: 1.005,
+                    scaleIncX2: 1.02,
+                    scaleDec: 0.995,
+                    scaleDecX2: 0.98,
+                    minWidth: _mainCenterItem.bounds.width,
+                    breakPointWidth: _mainCenterItem.bounds.width * 1.3,
+                    maxWidth: _mainCenterItem.bounds.width * 1.5
+                };
 
                 return {
                     'center': function (event, period, speed) {
-                        var _speed = speed || 1,
-                            _period = period || 2,
-                            _speedUp = 4,
-                            scalingStepLarger = 1.001 + (0.001 * _speed),
-                            scalingStepSmaller = 0.999 - (0.001 * _speed),
-                            bouncingEffect =  true,
-                            flyingItem,
-                            i;
+                        var i;
 
-                        if (timeElapsed > _period) {
-                            timeElapsed = 0;
-
-                            if (centerItemEnLarge) {
-                                flyingItem = createItem(2);
-                                flyingItemFunc.push(moveItemByPath(generatePath(), flyingItem));
-                            }
-
-                            centerItemEnLarge = centerItemEnLarge ? false : true;
-                        }
-
-                        if (centerItemEnLarge) {
-                            if (bouncingEffect && timeElapsed > _period * 0.9) {
-                                _mainCenterItem.scale(scalingStepLarger + (0.001 * _speed * _speedUp));
-
-                            } else {
-                                _mainCenterItem.scale(scalingStepLarger);
-                            }
-                        } else {
-                            if (bouncingEffect && timeElapsed < _period * 0.1) {
-                                _mainCenterItem.scale(scalingStepSmaller - (0.001 * _speed * _speedUp));
-                            } else {
-                                _mainCenterItem.scale(scalingStepSmaller);
-                            }
-
-                            if (_mainCenterItem.bounds.width < centerItemMinSize.width) {
-                                _mainCenterItem.bounds.width  = centerItemMinSize.width;
-                                _mainCenterItem.bounds.height = centerItemMinSize.height;
-                                _mainCenterItem.bounds.x = centerItemMinSize.x;
-                                _mainCenterItem.bounds.y = centerItemMinSize.y;
-                            }
-                        }
-
-                        timeElapsed += event.delta;
+                        internal.actions.brain.scenario[internal.actions.brain.currentPlay](flyingItemFunc);
+                        internal.actions.brain.config.timeElapsed  += event.delta;
 
                         if (flyingItemFunc.length > 0) {
                             for (i = 0; i < flyingItemFunc.length; i++) {
@@ -101,30 +192,48 @@
                                 }
                             }
                         }
+                    },
+                    changeImages: function (event) {
+                        var i;
+
+                        timeElapsed += event.delta;
+
+                        if (timeElapsed > 0.1) {
+                            timeElapsed = 0;
+
+                            if (imageIndex >= _images.length) {
+                                imageIndex = 0;
+                            }
+                            _images[imageIndex].visible = true;
+                            _brainBG.getGroup().children[1] = _images[imageIndex];
+
+                            imageIndex++;
+                        }
                     }
                 };
             };
 
-            createItem = function (index) {
+            internal.createItem = function (index) {
                 var createdItem = paper.project.importSVG(_loadedItems[index]),
-                    group = groupWithBackground(createdItem);
+                    group = internal.groupWithBackground(createdItem);
 
-                _mainCenterItem.insertAbove(group);
-                group.scale(0.3);
+                group.sendToBack();
+
+                group.scale(0.5);
                 group.position.x = paper.view.size.width / 2 - (createdItem.bounds.width / 2) * 0.3;
                 group.position.y = paper.view.size.height / 2 - (createdItem.bounds.height / 2) * 0.3;
 
                 return group;
             };
 
-            moveItemByPath = function (path, item) {
+            internal.moveItemByPath = function (path, item) {
                 var target = path.first,
-                    steps = getRandomInt(300, 400),
+                    steps = 200,//internal.getRandomInt(300, 400),
                     dX = 0,
                     dY = 0,
-                    randomRotateValue = getRandomInt(0, 1) ? getRandomInt(3, 5) : getRandomInt(-5, -3),
+                    randomRotateValue = 2,//internal.getRandomInt(0, 1) ? internal.getRandomInt(3, 5) : internal.getRandomInt(-5, -3),
                     tempPosition,
-                    blinking = getBlinkingEventFunc(item.children[0]);
+                    blinking = internal.getBlinkingEventFunc(item.children[0]);
 
                 item.position.x = target[0];
                 item.position.y = target[1];
@@ -143,15 +252,15 @@
 
                     if (parseFloat(tempPosition.x.toFixed(2)) === target[0] && parseFloat(tempPosition.y.toFixed(2)) === target[1]) {
                         switch (target) {
-                            case path.first:
-                                target = path.last;
-                                break;
-                            case path.last:
-                                // console.log('removed');
-                                item.remove();
-                                path.path.remove();
-                                this[0] = null;
-                                return;
+                        case path.first:
+                            target = path.last;
+                            break;
+                        case path.last:
+                            // console.log('removed');
+                            item.remove();
+                            path.path.remove();
+                            this[0] = null;
+                            return;
                         }
                         // calculate the dX and dY
                         dX = (target[0] - item.position.x) / steps;
@@ -173,15 +282,15 @@
                 };
             };
 
-            generatePath = function () {
+            internal.generatePath = function () {
                 var point1 = [paper.view.size.width / 2, paper.view.size.height / 2],
                     point2,// = [paper.view.size.width, paper.view.size.height],
                     path = new paper.Path();
 
-                if (getRandomInt(0, 1) === 1) {
-                    point2 = [paper.view.size.width * 1.1, getRandomInt(0, paper.view.size.height)];
+                if (internal.getRandomInt(0, 1) === 1) {
+                    point2 = [paper.view.size.width * 1.1, internal.getRandomInt(0, paper.view.size.height)];
                 } else {
-                    point2 = [getRandomInt(0, paper.view.size.width), paper.view.size.height * 1.1];
+                    point2 = [internal.getRandomInt(0, paper.view.size.width), paper.view.size.height * 1.1];
                 }
 
                 path.add(new paper.Point(point1), new paper.Point(point2));
@@ -195,15 +304,15 @@
                 };
             };
 
-            getRandomInt = function (min, max) {
+            internal.getRandomInt = function (min, max) {
                 return Math.floor(Math.random() * (max - min + 1)) + min;
             };
 
-            groupWithBackground = function (item) {
+            internal.groupWithBackground = function (item) {
                 var group,
                     path = new paper.Path.Circle({
-                        center: [item.position.x, item.position.y],
-                        radius: item.bounds.width > item.bounds.height ? item.bounds.width : item.bounds.height
+                        center: [item.position.x, item.position.y + 20],
+                        radius: (item.bounds.width > item.bounds.height ? item.bounds.width : item.bounds.height) * 1.5
                     }),
                     position = new paper.Point(path.position);
 
@@ -211,7 +320,7 @@
 
                 path.fillColor = {
                     gradient: {
-                        stops: [['#ffff00', 0.05], [new paper.Color(1, 1, 0, 0), 0.9 ]],
+                        stops: [['#ffee34', 0.01], [new paper.Color(255, 216, 81, 0.8), 0.01], [new paper.Color(1, 1, 0, 0.0), 1]],
                         radial: true
                     },
                     origin: position,
@@ -223,10 +332,10 @@
                 return group;
             };
 
-            getBlinkingEventFunc = function (item) {
+            internal.getBlinkingEventFunc = function (item) {
                 var delta = 0,
                     timePassed = 0,
-                    timeLimit = 1.5;
+                    timeLimit = 1;
 
                 item.visible = false;
 
@@ -250,15 +359,18 @@
                 };
             };
 
-            draw2LevelAnimation = function () {
+            internal.draw2LevelAnimation = function () {
                 var path = new paper.Path();
                 path.strokeColor = 'black';
                 path.add(new paper.Point(paper.view.size.width / 2  - _mainCenterItem.bounds.width, paper.view.size.height / 2));
                 path.add(new paper.Point(paper.view.size.width / 2  + _mainCenterItem.bounds.width, paper.view.size.height / 2));
             };
+
+
+            internal.setFiles(self.init);
         };
 
         return Brain;
-    });
+    }]);
 })();
 
