@@ -11,7 +11,7 @@
                 _loadedItems = [],
                 _mainCenterItem,
                 _brainBG,
-                _images = [],
+                _images = {},
                 internal =  {};
 
             paper.setup(canvas);
@@ -22,10 +22,16 @@
 
             self.init = function () {
                 var updateFunc,
-                    hoverFunc;
+                    hoverFunc,
+                    staticStateFunc,
+                    svg = paper.project.importSVG(_loadedItems[0]),
+                    tool = new paper.Tool(),
+                    isBrainHover = false,
+                    didOnce = false,
+                    hoverRect;
 
-                _images[0].visible = true;
-                _brainBG = internal.attachCompoundPath(paper.project.importSVG(_loadedItems[0]), _images[0]);
+                _images['mask0'].visible = true;
+                _brainBG = internal.attachCompoundPath(svg, _images['mask0']);
                 _mainCenterItem = new paper.Group([paper.project.importSVG(_loadedItems[0]), paper.project.importSVG(_loadedItems[1])]);
 
                 _mainCenterItem.name = 'loaderCenterItem';
@@ -38,13 +44,50 @@
                 _brainBG.position.x = paper.view.size.width / 2 - (_brainBG.bounds.width / 2) * 0.2;
                 _brainBG.position.y = paper.view.size.height / 2 - (_brainBG.bounds.height / 2) * 0.2;
 
+                hoverRect = internal.drawRectHover();
+                hoverRect.visible = false;
+                hoverRect.active = false;
+
                 updateFunc = self.getUpdateFunctions().center;
                 hoverFunc =  self.getUpdateFunctions().changeImages;
+                staticStateFunc = self.getUpdateFunctions().staticState;
 
                 paper.view.onFrame = function (event) {
                     updateFunc(event, 1, 3);
-                    hoverFunc(event);
+                    if (isBrainHover) {
+                        hoverFunc(event);
+
+                        if (!hoverRect.active) {
+                            hoverRect.active = true;
+                            hoverRect.visible = true;
+
+                            internal.setCursor.pointer();
+                        }
+
+                        didOnce = false;
+                    } else if (!didOnce) {
+                        staticStateFunc();
+
+                        if (hoverRect.active) {
+                            hoverRect.active = false;
+                            hoverRect.visible = false;
+
+                            internal.setCursor.normal();
+                        }
+
+
+                        didOnce = true;
+                    }
                 };
+
+                tool.onMouseMove = function (event) {
+                    if (_brainBG.contains(event.point)) {
+                        isBrainHover = true;
+                    } else {
+                        isBrainHover = false;
+                    }
+                };
+
             };
 
             internal.setFiles = function (func) {
@@ -66,7 +109,7 @@
                 });
             };
 
-            internal.setImage = function (src) {
+            internal.setImage = function (key, src) {
                 var raster = new paper.Raster({
                     source: src,
                     position: paper.view.center
@@ -74,17 +117,19 @@
 
                 raster.visible = false;
 
-                _images.push(raster);
+                _images[key] = raster;
 
                 return raster;
             };
 
             internal.setImages = function () {
-                internal.setImage('images/raster/brainMasks/mask1.jpg');
-                internal.setImage('images/raster/brainMasks/mask2.jpg');
-                internal.setImage('images/raster/brainMasks/mask3.jpg');
-                internal.setImage('images/raster/brainMasks/mask4.jpg');
-                internal.setImage('images/raster/brainMasks/mask5.jpg');
+                internal.setImage('mask0', 'images/raster/brainMasks/mask1.jpg');
+                internal.setImage('mask1', 'images/raster/brainMasks/mask2.jpg');
+                internal.setImage('mask2', 'images/raster/brainMasks/mask3.jpg');
+                internal.setImage('mask3', 'images/raster/brainMasks/mask4.jpg');
+                internal.setImage('mask4', 'images/raster/brainMasks/mask5.jpg');
+
+                internal.setImage('bg', 'images/raster/textures/texture_6.png');
             };
 
             internal.attachCompoundPath = function (path, raster) {
@@ -100,8 +145,13 @@
                 //group.clipMask = true;
                 group.clipped = true;
 
-                path.getGroup = function () {
-                    return group;
+                path.setNewGroup = function (img) {
+                    //group.remove();
+                    group.removeChildren();
+                    group.addChild(compoundPath);
+                    group.addChild(img);
+                    //group.clipMask = true;
+                    group.clipped = true;
                 };
 
                 return path;//_compoundPathGroups.push(group);
@@ -130,7 +180,7 @@
                         internal.actions.brain.config.timeElapsed  = 0;
                         internal.actions.brain.currentPlay++;
 
-                        flyingItemFunc.push(internal.moveItemByPath(internal.generatePath(), internal.createItem(2)));
+                        flyingItemFunc.push(internal.moveItemByVector(internal.generatePath(), internal.createItem(2)));
                     }
                 },
                 function () {
@@ -194,21 +244,29 @@
                         }
                     },
                     changeImages: function (event) {
-                        var i;
+                        var masks = 5;
 
                         timeElapsed += event.delta;
 
                         if (timeElapsed > 0.1) {
                             timeElapsed = 0;
 
-                            if (imageIndex >= _images.length) {
+                            if (imageIndex >= masks) {
+                                _images['mask' + (imageIndex - 1)].visible = false;
                                 imageIndex = 0;
+                            } else if (imageIndex !== 0) {
+                                _images['mask' + (imageIndex - 1)].visible = false;
                             }
-                            _images[imageIndex].visible = true;
-                            _brainBG.getGroup().children[1] = _images[imageIndex];
+
+                            _images['mask' + imageIndex].visible = true;
+                            _brainBG.setNewGroup(_images['mask' + imageIndex]);
 
                             imageIndex++;
                         }
+                    },
+                    staticState: function () {
+                        _images['bg'].visible = true;
+                        _brainBG.setNewGroup(_images['bg']);
                     }
                 };
             };
@@ -226,59 +284,103 @@
                 return group;
             };
 
-            internal.moveItemByPath = function (path, item) {
-                var target = path.first,
-                    steps = 200,//internal.getRandomInt(300, 400),
-                    dX = 0,
-                    dY = 0,
-                    randomRotateValue = 2,//internal.getRandomInt(0, 1) ? internal.getRandomInt(3, 5) : internal.getRandomInt(-5, -3),
-                    tempPosition,
+            internal.operators = {};
+
+            internal.operators.addition = function (points) {
+                var i,
+                    finalPoint = new paper.Point(0, 0);
+
+                for (i = 0; i !== points.length; i++) {
+                    finalPoint.x += points[i].x;
+                    finalPoint.y += points[i].y;
+                }
+
+                return finalPoint;
+            };
+
+            internal.trigonometry = {};
+
+            internal.trigonometry.getAngle = function (startPoint, endPoint, debug) {
+                var distance =  startPoint.getDistance(endPoint),
+                    nearSide = Math.abs(startPoint.y - endPoint.y).toFixed(2),
+                    radians,
+                    degrees,
+                    quarter;
+
+                if ((startPoint.x <= endPoint.x) && (startPoint.y <= endPoint.y)) {
+                    quarter = 1;
+                    degrees = 0;
+                } else if ((startPoint.x >= endPoint.x) && (startPoint.y <= endPoint.y)) {
+                    quarter = 2;
+                    degrees = 180;
+                } else if ((startPoint.x >= endPoint.x) && (startPoint.y >= endPoint.y)) {
+                    quarter = 3;
+                    degrees = 180;
+                } else if ((startPoint.x <= endPoint.x) && (startPoint.y >= endPoint.y)) {
+                    quarter = 4;
+                    degrees = 360;
+                }
+
+                radians = parseFloat(Math.asin((nearSide / distance).toFixed(2)));
+
+                if (quarter === 4 || quarter === 2) {
+                    degrees -=  parseFloat((radians * (180 / Math.PI)).toFixed(2));
+                } else {
+                    degrees += parseFloat((radians * (180 / Math.PI)).toFixed(2));
+                }
+
+                if (debug) {
+                    console.log('Degrees: ' + degrees);
+                    console.log('Quarter: ' + quarter);
+                }
+
+                return degrees; //following watches arrow
+            };
+
+            internal.moveItemByVector = function (path, item) {
+                var distance = path.first.getDistance(path.last),
+                    angle = internal.trigonometry.getAngle(path.first, path.last),
+                    steps = 200,
+                    step = distance / steps,
+                    currentStep = 0,
+                    currentDistance = 0,
+                    rotationValue = 2,
+                    vector = new paper.Point({length: 0, angle: angle}),
+                    lastPoint = internal.operators.addition([path.first, vector]),
+                    tempPath = new paper.Path(),
                     blinking = internal.getBlinkingEventFunc(item.children[0]);
 
-                item.position.x = target[0];
-                item.position.y = target[1];
-                tempPosition = {
-                    x: item.position.x,
-                    y: item.position.y
-                };
+                item.position.x =  path.first.x;
+                item.position.y =  path.first.y;
 
-                //When rotating positioning of element is slightly different from expected so I am creating tracks that are
-                //not visible however they are insurance that item reaches specific point
+                tempPath.add(path.first, lastPoint);
+                //tempPath.strokeColor = 'black';
+                tempPath.closed = true;
 
                 return function (event) {
-                    /* console.log('x ' + item.position.x + ' ' + target[0]);
-                     console.log('y ' + item.position.y + ' ' + target[1]);
-                     console.log(eventCounter);*/
+                    if (currentStep <= steps) {
+                        tempPath.segments[1].point =  internal.operators.addition([path.first, new paper.Point({length: currentDistance, angle: angle})]);
 
-                    if (parseFloat(tempPosition.x.toFixed(2)) === target[0] && parseFloat(tempPosition.y.toFixed(2)) === target[1]) {
-                        switch (target) {
-                        case path.first:
-                            target = path.last;
-                            break;
-                        case path.last:
-                            // console.log('removed');
-                            item.remove();
-                            path.path.remove();
-                            this[0] = null;
-                            return;
+
+                        item.rotate(rotationValue);
+                        item.position.x =  tempPath.segments[1].point.x;
+                        item.position.y =  tempPath.segments[1].point.y;
+
+                        currentStep++;
+                        currentDistance += step;
+
+                        if (blinking && blinking(event)) { // Stop invocation of this function as it has no need anymore
+                            blinking = false;
                         }
-                        // calculate the dX and dY
-                        dX = (target[0] - item.position.x) / steps;
-                        dY = (target[1] - item.position.y) / steps;
-                        //console.log(target[0] + " " + item.position.x);
+
+                    } else {
+                        item.remove();
+                        tempPath.remove();
+                        path.path.remove();
+                        this[0] = null;
+                        return;
                     }
 
-                    // do the movement
-                    item.rotate(randomRotateValue);
-                    item.position.x += dX;
-                    item.position.y += dY;
-                    tempPosition.x += dX;
-                    tempPosition.y += dY;
-
-                    if (blinking && blinking(event)) { // Stop invocation of this function as it has no need anymore
-                        blinking = false;
-                    }
-                    // console.log(target[0] + " " + item.position.x);
                 };
             };
 
@@ -298,8 +400,8 @@
                 path.closed = true;
 
                 return {
-                    first: point1,
-                    last: point2,
+                    first: new paper.Point(point1),
+                    last: new paper.Point(point2),
                     path: path
                 };
             };
@@ -316,16 +418,7 @@
                     }),
                     position = new paper.Point(path.position);
 
-                position.y -= path.bounds.width / 10;
-
-                path.fillColor = {
-                    gradient: {
-                        stops: [['#ffee34', 0.01], [new paper.Color(255, 216, 81, 0.8), 0.01], [new paper.Color(1, 1, 0, 0.0), 1]],
-                        radial: true
-                    },
-                    origin: position,
-                    destination: path.bounds.topCenter
-                };
+                path.position.y -= path.bounds.width / 13;
 
                 group = new paper.Group(path, item);
 
@@ -335,22 +428,38 @@
             internal.getBlinkingEventFunc = function (item) {
                 var delta = 0,
                     timePassed = 0,
-                    timeLimit = 1;
-
-                item.visible = false;
+                    timeLimit = 1,
+                    visibility = false;
 
                 return function (event) {
+                    var visible =  {
+                            gradient: {
+                                stops: [[new paper.Color(255, 216, 81, 0.8), 0.1], [new paper.Color(1, 1, 0, 0.0), 1]],
+                                radial: true
+                            },
+                            origin: new paper.Point(item.position.x, item.position.y),
+                            destination: item.bounds.topCenter
+                        },
+                        invisible = new paper.Color(1, 1, 0, 0.0);
+
                     delta += event.delta;
                     timePassed += event.delta;
+
 
                     if (timePassed > timeLimit && delta > 0.05) {
                         delta = 0;
 
-                        item.visible = item.visible ? false : true;
+                        if (visibility) {
+                            item.fillColor = invisible;
+                            visibility = false;
+                        } else {
+                            item.fillColor = visible;
+                            visibility = true;
+                        }
                     }
 
                     if (timePassed > timeLimit + 1) {
-                        item.visible = true;
+                        item.fillColor = visible;
 
                         return true; // Means that you can remove invocation of this function
                     }
@@ -359,13 +468,50 @@
                 };
             };
 
-            internal.draw2LevelAnimation = function () {
-                var path = new paper.Path();
-                path.strokeColor = 'black';
-                path.add(new paper.Point(paper.view.size.width / 2  - _mainCenterItem.bounds.width, paper.view.size.height / 2));
-                path.add(new paper.Point(paper.view.size.width / 2  + _mainCenterItem.bounds.width, paper.view.size.height / 2));
+            internal.drawRectHover = function () {
+                var size = new paper.Size(_brainBG.bounds.width * 2.5, _brainBG.bounds.height * 1.8),
+                    strokedRect = new paper.Path.Rectangle({
+                        point: [_brainBG.position.x - size.width / 2, _brainBG.position.y - size.height / 2],
+                        size: [size.width, size.height]
+                    }),
+                    filledRect,
+                    text = new paper.PointText(new paper.Point(strokedRect.bounds.topCenter)),
+                    group,
+                    offsetY = 7;
+
+                text.fontFamily = 'NeueHelveticaBold';
+                text.content = 'DREAMER';
+                text.fontSize = '25px';
+                text.fillColor = '#fff';
+                text.position.x -= text.bounds.width / 2;
+                text.position.y -= offsetY;
+
+                size = new paper.Size(text.bounds.width * 1.5, text.bounds.height);
+
+                filledRect = new paper.Path.Rectangle({
+                    point: [text.position.x - size.width / 2, text.position.y - size.height / 2],
+                    size: [size.width, size.height]
+                });
+                filledRect.fillColor = '#CF000F';
+
+
+                strokedRect.strokeColor = '#CF000F';
+                strokedRect.strokeWidth = 3;
+
+                group = new paper.Group([strokedRect, filledRect, text]);
+
+                return group;
             };
 
+            internal.setCursor  = {};
+
+            internal.setCursor.pointer = function () {
+                $(canvas).css('cursor', 'pointer');
+            };
+
+            internal.setCursor.normal = function () {
+                $(canvas).css('cursor', 'default');
+            };
 
             internal.setFiles(self.init);
         };
