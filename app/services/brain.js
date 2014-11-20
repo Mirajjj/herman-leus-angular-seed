@@ -1,11 +1,11 @@
-/*global angular, $, paper*/
+/*global angular, $, paper, window*/
 (function () {
     'use strict';
 
     /* Services */
-    var services = angular.module('mainModule.services', []);
+    var services = angular.module('mainModule.services');
 
-    services.factory('brainFactory', ['$q', '$http', '$templateCache', function ($q, $http, $templateCache) {
+    services.factory('brainFactory', ['$q', '$http', '$templateCache', function ($q, $http) {
         var Brain = function (canvas) {
             var self = this,
                 _loadedItems = [],
@@ -14,21 +14,23 @@
                 _images = {},
                 internal =  {};
 
-            paper.setup(canvas);
-
             self.getItems = function () {
                 return _loadedItems;
             };
+
+            self.onFrame = function () {};
 
             self.init = function () {
                 var updateFunc,
                     hoverFunc,
                     staticStateFunc,
+                    resizeFunc,
                     svg = paper.project.importSVG(_loadedItems[0]),
                     tool = new paper.Tool(),
                     isBrainHover = false,
                     didOnce = false,
-                    hoverRect;
+                    hoverRect,
+                    externalTrigger = false;
 
                 _images['mask0'].visible = true;
                 _brainBG = internal.attachCompoundPath(svg, _images['mask0']);
@@ -36,13 +38,13 @@
 
                 _mainCenterItem.name = 'loaderCenterItem';
                 _mainCenterItem.scale(0.4);
-                _mainCenterItem.position.x = paper.view.size.width / 2 - (_mainCenterItem.bounds.width / 2) * 0.2;
-                _mainCenterItem.position.y = paper.view.size.height / 2 - (_mainCenterItem.bounds.height / 2) * 0.2;
+                _mainCenterItem.position.x = paper.view.size.width / 2;
+                _mainCenterItem.position.y = paper.view.size.height / 2;
                 _mainCenterItem.children[0].visible = false;
 
                 _brainBG.scale(0.39);
-                _brainBG.position.x = paper.view.size.width / 2 - (_brainBG.bounds.width / 2) * 0.2;
-                _brainBG.position.y = paper.view.size.height / 2 - (_brainBG.bounds.height / 2) * 0.2;
+                _brainBG.position.x = paper.view.size.width / 2;
+                _brainBG.position.y = paper.view.size.height / 2;
 
                 hoverRect = internal.drawRectHover();
                 hoverRect.visible = false;
@@ -51,9 +53,11 @@
                 updateFunc = self.getUpdateFunctions().center;
                 hoverFunc =  self.getUpdateFunctions().changeImages;
                 staticStateFunc = self.getUpdateFunctions().staticState;
+                resizeFunc = self.getUpdateFunctions().resize;
 
-                paper.view.onFrame = function (event) {
+                self.onFrame = function (event) {
                     updateFunc(event, 1, 3);
+                    console.log(isBrainHover)
                     if (isBrainHover) {
                         hoverFunc(event);
 
@@ -81,12 +85,31 @@
                 };
 
                 tool.onMouseMove = function (event) {
-                    if (_brainBG.contains(event.point)) {
-                        isBrainHover = true;
-                    } else {
-                        isBrainHover = false;
+                    if (!externalTrigger) {
+                        if (_brainBG.contains(event.point)) {
+                            isBrainHover = true;
+                        } else {
+                            isBrainHover = false;
+                        }
                     }
                 };
+
+                $(window).resize(function () {
+                    resizeFunc();
+                    hoverRect.resize();
+
+                });
+
+
+                $(canvas).on('brainMouseOver', function () {
+                    externalTrigger = true;
+                    isBrainHover = true;
+                });
+
+                $(canvas).on('brainMouseOut', function () {
+                    externalTrigger = false;
+                    isBrainHover = false;
+                });
 
             };
 
@@ -112,7 +135,7 @@
             internal.setImage = function (key, src) {
                 var raster = new paper.Raster({
                     source: src,
-                    position: paper.view.center
+                    position: new paper.Point(paper.view.center.x, paper.view.center.y)
                 });
 
                 raster.visible = false;
@@ -267,6 +290,19 @@
                     staticState: function () {
                         _images['bg'].visible = true;
                         _brainBG.setNewGroup(_images['bg']);
+                    },
+                    resize: function () {
+                        var key;
+
+                        _mainCenterItem.position.x = paper.view.size.width / 2 - (_mainCenterItem.bounds.width / 2) * 0.2;
+                        _mainCenterItem.position.y = paper.view.size.height / 2 - (_mainCenterItem.bounds.height / 2) * 0.2;
+
+                        _brainBG.position.x = paper.view.size.width / 2 - (_brainBG.bounds.width / 2) * 0.2;
+                        _brainBG.position.y = paper.view.size.height / 2 - (_brainBG.bounds.height / 2) * 0.2;
+
+                        for (key in _images) {
+                            _images[key].position =  new paper.Point(paper.view.center.x, paper.view.center.y);
+                        }
                     }
                 };
             };
@@ -499,6 +535,15 @@
                 strokedRect.strokeWidth = 3;
 
                 group = new paper.Group([strokedRect, filledRect, text]);
+
+                group.delta = {};
+                group.delta.x = _brainBG.position.x - group.position.x;
+                group.delta.y = _brainBG.position.y - group.position.y;
+
+                group.resize = function () {
+                    group.position.x = _brainBG.position.x - group.delta.x;
+                    group.position.y = _brainBG.position.y - group.delta.y;
+                }
 
                 return group;
             };

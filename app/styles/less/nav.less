@@ -1,0 +1,160 @@
+@import "settings.less";
+
+.main-nav {
+  position: fixed;
+  top: 0;
+  z-index: 2;
+  right: 0;
+  background: #fcfcfc;
+  height: 100%;
+  border-left: 5px solid @color-1;
+
+  .img-block{
+    padding: 10px;
+
+    .img-container {
+      width: 150px;
+      height: 150px;
+      background: url(../../images/raster/photos/avatar.jpg) 47% 5%;
+      background-size: 250px 250px;
+      border: 1px solid @color-1;
+
+      /* Safari 3-4, iOS 1-3.2, Android 1.6- */
+      -webkit-border-radius: 50%;
+
+      /* Firefox 1-3.6 */
+      -moz-border-radius: 50%;
+
+      /* Opera 10.5, IE 9, Safari 5, Chrome, Firefox 4, iOS 4, Android 2.1+ */
+      border-radius: 50%;
+
+      margin-bottom: 20px;
+    }
+
+    .name {
+      font-family: 'NeueHelveticaBold';
+      text-align: center;
+      letter-spacing: 3px;
+      color: @color-1;
+    }
+  }
+
+  .nav-container {
+    display: block;
+    margin-top: 70%;
+
+    ul {
+      list-style-type: none;
+      padding-left: 0px;
+
+      li {
+        text-align: center;
+        padding-top: 7px;
+        padding-bottom: 7px;
+        cursor: pointer;
+
+        a {
+          font-size: 18px;
+          text-decoration: none;
+          color: @color-1;
+        }
+
+        &:hover {
+          background: @color-2;
+          border-left: 5px solid @color-4;
+          margin-left: -5px;
+
+          a {
+            color: @color-3;
+            font-family: 'NeueHelveticaBold';
+          }
+        }
+      }
+    }
+  }
+}
+
+@nav-position-hidden: -172px;
+@nav-position-visible: 0px;
+@nav-animation-period: 0.5s;
+
+.main-nav.shown {
+  margin-right: @nav-position-visible;
+}
+
+.main-nav.collapsed {
+  margin-right: @nav-position-hidden;
+}
+
+
+.main-nav.show {
+  -webkit-animation: SHOW-NAV-ANIMATION @nav-animation-period; /* Safari 4+ */
+  -moz-animation:    SHOW-NAV-ANIMATION @nav-animation-period; /* Fx 5+ */
+  -o-animation:      SHOW-NAV-ANIMATION @nav-animation-period; /* Opera 12+ */
+  animation:         SHOW-NAV-ANIMATION @nav-animation-period; /* IE 10+, Fx 29+ */
+
+  animation-timing-function: ease;
+  -webkit-animation-timing-function: ease;
+}
+
+@-webkit-keyframes SHOW-NAV-ANIMATION {
+  0%   { margin-right: @nav-position-hidden}
+  100% { margin-right: @nav-position-visible}
+}
+@-moz-keyframes SHOW-NAV-ANIMATION {
+  0%   { margin-right: @nav-position-hidden}
+  100% { margin-right: @nav-position-visible}
+}
+@-o-keyframes SHOW-NAV-ANIMATION {
+  0%   { margin-right: @nav-position-hidden}
+  100% { margin-right: @nav-position-visible}
+}
+@keyframes SHOW-NAV-ANIMATION {
+  0%   { margin-right: @nav-position-hidden}
+  100% { margin-right: @nav-position-visible}
+}
+
+.main-nav.hide {
+  -webkit-animation: HIDE-NAV-ANIMATION @nav-animation-period; /* Safari 4+ */
+  -moz-animation:    HIDE-NAV-ANIMATION @nav-animation-period; /* Fx 5+ */
+  -o-animation:      HIDE-NAV-ANIMATION @nav-animation-period; /* Opera 12+ */
+  animation:         HIDE-NAV-ANIMATION @nav-animation-period; /* IE 10+, Fx 29+ */
+  animation-timing-function: ease;
+  -webkit-animation-timing-function: ease;
+
+}
+
+@-webkit-keyframes HIDE-NAV-ANIMATION {
+  0%   { margin-right: @nav-position-visible}
+  100% { margin-right: @nav-position-hidden}
+}
+@-moz-keyframes HIDE-NAV-ANIMATION {
+  0%   { margin-right: @nav-position-visible}
+  100% { margin-right: @nav-position-hidden}
+}
+@-o-keyframes HIDE-NAV-ANIMATION {
+  0%   { margin-right: @nav-position-visible}
+  100% { margin-right: @nav-position-hidden}
+}
+@keyframes HIDE-NAV-ANIMATION {
+  0%   { margin-right: @nav-position-visible}
+  100% { margin-right: @nav-position-hidden}
+}
+
+
+
+.menu-images {
+  position: fixed;
+  top: 30%;
+  right: 0px;
+
+  -ms-transform: rotate(-60deg);
+  -webkit-transform: rotate(-60deg);
+  transform: rotate(-60deg);
+
+  .why {
+    margin-right: -280px;
+    opacity: 0;
+
+  }
+}

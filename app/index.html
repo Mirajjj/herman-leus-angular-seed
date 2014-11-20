@@ -12,7 +12,9 @@
   <link rel="stylesheet" href="bower_components/html5-boilerplate/css/normalize.css">
   <link rel="stylesheet" href="bower_components/html5-boilerplate/css/main.css">
 
+  <link rel="stylesheet/less" type="text/css" href="styles/less/settings.less">
   <link rel="stylesheet/less" type="text/css" href="styles/less/common.less">
+  <link rel="stylesheet/less" type="text/css" href="styles/less/nav.less">
     <script>
         less = {
             env: "development",
@@ -28,6 +30,32 @@
 </head>
 <body>
   <div ng-view></div>
+
+  <div class="menu-images">
+      <img src="images/raster/menu/man-thinking.png" class="why"/>
+  </div>
+
+  <div class="main-nav collapsed hide" side-menu>
+      <div class="img-block">
+        <div class="img-container"></div>
+        <div class="name">
+          <span class="uppercase">Herman Leus</span>
+         </div>
+      </div>
+      <div class="nav-container">
+          <ul>
+              <li  menu-img-slide><a href="" data-img-class="why">Why</a></li>
+              <li><a href="">About</a></li>
+              <li><a href="">Blog</a></li>
+              <li><a href="">Skills</a></li>
+              <li><a href="">Experience</a></li>
+              <li class="uppercase" hover-brain><a href="">Dreams</a></li>
+          </ul>
+      </div>
+      <div class="socials-container">
+          <ul></ul>
+      </div>
+  </div>
   <!-- In production use:
   <script src="//ajax.googleapis.com/ajax/libs/angularjs/x.x.x/angular.min.js"></script>
   -->
@@ -35,9 +63,10 @@
   <script src="bower_components/angular/angular.js"></script>
   <script src="bower_components/angular-route/angular-route.js"></script>
   <script src="bower_components/paper/dist/paper-full.min.js"></script>
-  <script src="directives/directives.js"></script>
-  <script src="services/hexagons.js"></script>
+  <script src="services/services.js"></script>
   <script src="services/brain.js"></script>
+  <script src="services/menu.js"></script>
+  <script src="directives/directives.js"></script>
   <script src="app.js"></script>
   <script src="partials/home/home.js"></script>
 </body>
