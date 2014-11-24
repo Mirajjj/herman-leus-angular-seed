@@ -1,0 +1,64 @@
+@page-header-period: 1s;
+
+.slide(@name, @delay) {
+  -webkit-animation: @name @page-header-period; /* Safari 4+ */
+  -moz-animation:    @name @page-header-period; /* Fx 5+ */
+  -o-animation:      @name @page-header-period; /* Opera 12+ */
+  animation:         @name @page-header-period; /* IE 10+, Fx 29+ */
+
+  -webkit-animation-delay: @delay;
+  -moz-animation-delay: @delay;
+  -o-animation-delay: @delay;
+  animation-delay: @delay;
+
+  -webkit-animation-fill-mode: forwards;
+  -moz-animation-fill-mode: forwards;
+  -o-animation-fill-mode: forwards;
+  animation-fill-mode: forwards;
+}
+
+.slideKeyFrames(@zero, @hundred) {
+  0%   { margin-left: @zero}
+  100% { margin-left: @hundred}
+}
+
+.page-header h1:first-child {
+  .slide(SLIDE-ANIMATION-1, 0.7s);
+}
+
+.page-header h1:last-child{
+  .slide(SLIDE-ANIMATION-2, 1s);
+}
+
+@SLIDE-ANIMATION-1-param-1: 0px;
+@SLIDE-ANIMATION-1-param-2: 1000px;
+
+@-webkit-keyframes SLIDE-ANIMATION-1 {
+  .slideKeyFrames(@SLIDE-ANIMATION-1-param-1, @SLIDE-ANIMATION-1-param-2);
+}
+@-moz-keyframes SLIDE-ANIMATION-1 {
+  .slideKeyFrames(@SLIDE-ANIMATION-1-param-1, @SLIDE-ANIMATION-1-param-2);
+}
+@-o-keyframes SLIDE-ANIMATION-1 {
+  .slideKeyFrames(@SLIDE-ANIMATION-1-param-1, @SLIDE-ANIMATION-1-param-2);
+}
+@keyframes SLIDE-ANIMATION-1 {
+  .slideKeyFrames(@SLIDE-ANIMATION-1-param-1, @SLIDE-ANIMATION-1-param-2);
+}
+
+
+@SLIDE-ANIMATION-2-param-1: 0px;
+@SLIDE-ANIMATION-2-param-2: 1100px;
+
+@-webkit-keyframes SLIDE-ANIMATION-2 {
+  .slideKeyFrames(@SLIDE-ANIMATION-2-param-1, @SLIDE-ANIMATION-2-param-2);
+}
+@-moz-keyframes SLIDE-ANIMATION-2 {
+  .slideKeyFrames(@SLIDE-ANIMATION-2-param-1, @SLIDE-ANIMATION-2-param-2);
+}
+@-o-keyframes SLIDE-ANIMATION-2 {
+  .slideKeyFrames(@SLIDE-ANIMATION-2-param-1, @SLIDE-ANIMATION-2-param-2);
+}
+@keyframes SLIDE-ANIMATION-2 {
+  .slideKeyFrames(@SLIDE-ANIMATION-2-param-1, @SLIDE-ANIMATION-2-param-2);
+}

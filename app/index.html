@@ -15,6 +15,8 @@
   <link rel="stylesheet/less" type="text/css" href="styles/less/settings.less">
   <link rel="stylesheet/less" type="text/css" href="styles/less/common.less">
   <link rel="stylesheet/less" type="text/css" href="styles/less/nav.less">
+  <link rel="stylesheet/less" type="text/css" href="styles/less/home.less">
+  <link rel="stylesheet/less" type="text/css" href="styles/less/animation.less">
     <script>
         less = {
             env: "development",
@@ -29,13 +31,18 @@
     <script src="bower_components/html5-boilerplate/js/vendor/modernizr-2.6.2.min.js"></script>
 </head>
 <body>
-  <div ng-view></div>
+    <div class="page-header show">
+        <h1>{ Herman Leus</h1>
+        <h1>Javascript Ninja }</h1>
+    </div>
 
-  <div class="menu-images">
+    <div ng-view></div>
+
+    <div class="menu-images">
       <img src="images/raster/menu/man-thinking.png" class="why"/>
-  </div>
+    </div>
 
-  <div class="main-nav collapsed hide" side-menu>
+    <div class="main-nav collapsed hide" side-menu>
       <div class="img-block">
         <div class="img-container"></div>
         <div class="name">
@@ -55,7 +62,16 @@
       <div class="socials-container">
           <ul></ul>
       </div>
-  </div>
+    </div>
+
+    <div class="introduction" introduction-container>
+        <div class="mouth"></div>
+        <p>Wlecome to my Website! My name is <span class="name">HERMAN LEUS</span> and I am <span class="occupation">super passionate <span class="javascript">Javascript</span> developer </span> devoted to the beauty of web arts.
+            This is my personal Website where I can push the possibilities of creativity and technology as one indivisible whole.
+            Here you can find all information about me including all social links and projects that I took part in or just enjoy my works XD.</p>
+        <div class="underline"></div>
+    </div>
+
   <!-- In production use:
   <script src="//ajax.googleapis.com/ajax/libs/angularjs/x.x.x/angular.min.js"></script>
   -->

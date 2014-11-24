@@ -1,0 +1,67 @@
+@import "settings.less";
+.page-header {
+  font-family: 'NeueHelveticaBold';
+  position: absolute;
+  z-index: 1;
+  margin-left: -1000px;
+  top: 10%;
+  left: 5%;
+
+  h1 {
+    font-size: 60px;
+    margin-bottom: 0px;
+    margin-top: 0px;
+    color: @color-1;
+  }
+
+  h1:last-child {
+    margin-left: 100px;
+  }
+}
+
+.introduction {
+  position: absolute;
+  width: 500px;
+  margin-left: 12%;
+  opacity: 0;
+  top: 1000px;
+
+  .mouth {
+    height: 150px;
+    width: 300px;
+    background: url('../../images/raster/homepage/mouth.png') 0% 100%;
+    position: absolute;
+    margin-top: 217px;
+  }
+
+  p {
+    text-align: justify;
+    font-size: 19px;
+    max-width: 500px;
+    padding-right: 15px;
+    padding-left: 15px;
+
+    .name {
+      font-family: 'NeueHelveticaBold';
+      color: @color-4;
+    }
+
+    .occupation {
+      font-style: italic;
+
+      .javascript {
+        font-style: normal;
+        font-family: 'NeueHelveticaBold';
+        color: @color-7;
+      }
+    }
+  }
+
+  div.underline {
+    margin-top: -30px;
+    height: 20px;
+    border-bottom: 5px solid @color-5;
+    border-left: 5px solid @color-5;
+    border-right: 5px solid @color-5;
+  }
+}

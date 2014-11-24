@@ -8,7 +8,11 @@
 
     directives.directive('canvasHomepage', ['homepageCanvas', function (Initialization) {
         return function (scope, elm, attrs) {
-            var init = new Initialization(elm[0]);
+            var init;
+
+            $(elm[0]).width($(window).width());
+
+            init = new Initialization(elm[0]);
         };
     }]);
 
@@ -67,6 +71,15 @@
                     $('#homepage-canvas').trigger('brainMouseOut');
                 }
             );
+        };
+    }]);
+
+    directives.directive('introductionContainer', [function () {
+        return function (scope, elm, attrs) {
+            $(elm).animate({
+                'top': ($(window).height() * 0.55) + 'px',
+                'opacity': 1
+            }, 500);
         };
     }]);
 })();
