@@ -57,7 +57,7 @@
 
                 self.onFrame = function (event) {
                     updateFunc(event, 1, 3);
-                    console.log(isBrainHover)
+
                     if (isBrainHover) {
                         hoverFunc(event);
 

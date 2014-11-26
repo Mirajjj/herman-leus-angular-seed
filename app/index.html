@@ -31,46 +31,12 @@
     <script src="bower_components/html5-boilerplate/js/vendor/modernizr-2.6.2.min.js"></script>
 </head>
 <body>
-    <div class="page-header show">
-        <h1>{ Herman Leus</h1>
-        <h1>Javascript Ninja }</h1>
-    </div>
-
     <div ng-view></div>
 
-    <div class="menu-images">
-      <img src="images/raster/menu/man-thinking.png" class="why"/>
-    </div>
+    <div class="menu-images" ng-include="'partials/templates/side_menu_images.html'"></div>
 
-    <div class="main-nav collapsed hide" side-menu>
-      <div class="img-block">
-        <div class="img-container"></div>
-        <div class="name">
-          <span class="uppercase">Herman Leus</span>
-         </div>
-      </div>
-      <div class="nav-container">
-          <ul>
-              <li  menu-img-slide><a href="" data-img-class="why">Why</a></li>
-              <li><a href="">About</a></li>
-              <li><a href="">Blog</a></li>
-              <li><a href="">Skills</a></li>
-              <li><a href="">Experience</a></li>
-              <li class="uppercase" hover-brain><a href="">Dreams</a></li>
-          </ul>
-      </div>
-      <div class="socials-container">
-          <ul></ul>
-      </div>
-    </div>
+    <div class="main-nav collapsed hide" side-menu ng-include="'partials/templates/side_menu.html'"></div>
 
-    <div class="introduction" introduction-container>
-        <div class="mouth"></div>
-        <p>Wlecome to my Website! My name is <span class="name">HERMAN LEUS</span> and I am <span class="occupation">super passionate <span class="javascript">Javascript</span> developer </span> devoted to the beauty of web arts.
-            This is my personal Website where I can push the possibilities of creativity and technology as one indivisible whole.
-            Here you can find all information about me including all social links and projects that I took part in or just enjoy my works XD.</p>
-        <div class="underline"></div>
-    </div>
 
   <!-- In production use:
   <script src="//ajax.googleapis.com/ajax/libs/angularjs/x.x.x/angular.min.js"></script>

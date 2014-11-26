@@ -41,18 +41,20 @@
     directives.directive('menuImgSlide', [function () {
         return function (scope, elm, attrs) {
             var img = $('.menu-images .' + ($(elm).find('a').data('img-class'))),
+                hidden = img.data('hidden-position'),
+                visible = img.data('visible-position'),
                 period = 500;
 
             $(elm).hover(
                 function () {
                     img.stop().animate({
-                        'margin-right': 120 + 'px',
+                        'margin-right': visible,
                         'opacity': 1
                     }, 500);
                 },
                 function () {
                     img.stop().animate({
-                        'margin-right': -285 + 'px',
+                        'margin-right': hidden,
                         'opacity': 0
                     }, 300);
 
