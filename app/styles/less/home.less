@@ -1,67 +1,175 @@
 @import "settings.less";
+#homepage-canvas {
+  width: 100% !important;
+}
+
 .page-header {
   font-family: 'NeueHelveticaBold';
   position: absolute;
   z-index: 1;
-  margin-left: -1000px;
-  top: 10%;
-  left: 5%;
+  left: -500px;
+  border-bottom: none;
 
   h1 {
     font-size: 60px;
     margin-bottom: 0px;
     margin-top: 0px;
     color: @color-1;
+
   }
 
   h1:last-child {
     margin-left: 100px;
   }
+
+  @media screen and (max-width: 980px) {
+    h1 {
+      font-size: 50px;
+    }
+  }
+
+  @media screen and (max-width: 850px) {
+    h1 {
+      font-size: 40px;
+    }
+  }
+
+  @media screen and (max-width: 500px) {
+    h1 {
+      font-size: 30px;
+    }
+
+    h1:last-child {
+      margin-left: 40px;
+    }
+  }
 }
 
 .introduction {
   position: absolute;
-  width: 500px;
-  margin-left: 12%;
+  margin-left: 5%;
+  margin-right: 5%;
   opacity: 0;
   top: 1000px;
+  width: 90%;
 
-  .mouth {
-    height: 150px;
-    width: 300px;
-    background: url('../../images/raster/homepage/mouth.png') 0% 100%;
-    position: absolute;
-    margin-top: 217px;
+
+  h1 {
+    width: 95%;
+    margin-left: 2.5%;
+    font-family: 'NeueHelveticaBold';
+    font-size: 40px;
+    white-space: nowrap;
   }
 
-  p {
-    text-align: justify;
-    font-size: 19px;
-    max-width: 500px;
-    padding-right: 15px;
-    padding-left: 15px;
-
-    .name {
-      font-family: 'NeueHelveticaBold';
-      color: @color-4;
+  @media screen and (max-width: 980px) {
+    h1 {
+      font-size: 30px;
     }
+  }
 
-    .occupation {
-      font-style: italic;
+  @media screen and (max-width: 700px) {
+    h1 {
+      font-size: 20px;
+    }
+  }
 
-      .javascript {
-        font-style: normal;
-        font-family: 'NeueHelveticaBold';
-        color: @color-7;
-      }
+  @media screen and (max-width: 500px) {
+    h1 {
+      font-size: 15px;
     }
   }
 
   div.underline {
-    margin-top: -30px;
     height: 20px;
     border-bottom: 5px solid @color-5;
     border-left: 5px solid @color-5;
     border-right: 5px solid @color-5;
+  }
+}
+
+.why-block {
+  display: block;
+  border-top: 1px solid @color-1;
+  width: 100%;
+  background: @color-1;
+  color: #fff;
+  font-family: 'NeueHelveticaLight';
+
+  .header, .footer {
+    text-align: center;
+    margin-top: 80px;
+    padding-bottom: 100px;
+
+    h1 {
+      margin-top: 0px;
+      font-family: 'NeueHelveticaBold';
+      font-size: 60px;
+      letter-spacing: 5px;
+    }
+
+    span {
+      font-family: 'NeueHelveticaBold';
+      font-size: 80px;
+      letter-spacing: 5px;
+      text-transform: uppercase;
+    }
+  }
+
+  .block-content {
+    display: block;
+    width: 100%;
+    margin-left: 0%;
+    padding-bottom: 50px;
+
+    .content-column {
+      display: block;
+      position: relative;
+      width: 220px;
+      float:left;
+
+      p {
+        font-family: 'NeueHelveticaBold';
+        font-size: 35px;
+        letter-spacing: 5px;
+        text-transform: uppercase;
+        margin-bottom: 5px;
+        position: absolute;
+      }
+
+      p.top {
+        margin-top: -45px;
+      }
+
+      p.bottom {
+        margin-top: 175px;
+      }
+
+      .svg-image {
+        border: 10px solid #fff;
+        width: 180px;
+        height: 180px;
+
+        svg {
+          width: 100%;
+          height: 100%;
+          padding: 10px;
+          g {
+            fill: #fff;
+          }
+
+          path {
+            fill: #fff;
+          }
+        }
+      }
+    }
+  }
+}
+
+.about-block {
+  overflow: hidden;
+  video#videoBackground {
+
   }
 }

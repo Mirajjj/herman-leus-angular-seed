@@ -11,12 +11,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="bower_components/html5-boilerplate/css/normalize.css">
   <link rel="stylesheet" href="bower_components/html5-boilerplate/css/main.css">
+  <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.min.css"/>
 
   <link rel="stylesheet/less" type="text/css" href="styles/less/settings.less">
   <link rel="stylesheet/less" type="text/css" href="styles/less/common.less">
   <link rel="stylesheet/less" type="text/css" href="styles/less/nav.less">
   <link rel="stylesheet/less" type="text/css" href="styles/less/home.less">
   <link rel="stylesheet/less" type="text/css" href="styles/less/animation.less">
+
     <script>
         less = {
             env: "development",
@@ -30,18 +32,17 @@
     <script>less.watch();</script>
     <script src="bower_components/html5-boilerplate/js/vendor/modernizr-2.6.2.min.js"></script>
 </head>
-<body>
+<body jquery-custom-funcs>
+
     <div ng-view></div>
-
     <div class="menu-images" ng-include="'partials/templates/side_menu_images.html'"></div>
-
     <div class="main-nav collapsed hide" side-menu ng-include="'partials/templates/side_menu.html'"></div>
-
 
   <!-- In production use:
   <script src="//ajax.googleapis.com/ajax/libs/angularjs/x.x.x/angular.min.js"></script>
   -->
   <script src="bower_components/jquery/dist/jquery.js"></script>
+
   <script src="bower_components/angular/angular.js"></script>
   <script src="bower_components/angular-route/angular-route.js"></script>
   <script src="bower_components/paper/dist/paper-full.min.js"></script>

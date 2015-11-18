@@ -4,13 +4,13 @@
   position: fixed;
   top: 0;
   z-index: 2;
-  right: 0;
+  left: 0;
   background: #fcfcfc;
   height: 100%;
-  border-left: 5px solid @color-1;
+  border-right: 5px solid @color-1;
 
   .menu-icon {
-    right: 172px;
+    left: 172px;
     top: 25%;
     position: absolute;
     z-index: -1;
@@ -68,8 +68,8 @@
 
         &:hover {
           background: @color-2;
-          border-left: 5px solid @color-4;
-          margin-left: -5px;
+          border-right: 5px solid @color-4;
+          margin-right: -5px;
 
           a {
             color: @color-3;
@@ -86,11 +86,11 @@
 @nav-animation-period: 0.5s;
 
 .main-nav.shown {
-  margin-right: @nav-position-visible;
+  margin-left: @nav-position-visible;
 }
 
 .main-nav.collapsed {
-  margin-right: @nav-position-hidden;
+  margin-left: @nav-position-hidden;
 }
 
 
@@ -105,23 +105,24 @@
 }
 
 @-webkit-keyframes SHOW-NAV-ANIMATION {
-  0%   { margin-right: @nav-position-hidden}
-  100% { margin-right: @nav-position-visible}
+  0%   { margin-left: @nav-position-hidden}
+  100% { margin-left: @nav-position-visible}
 }
 @-moz-keyframes SHOW-NAV-ANIMATION {
-  0%   { margin-right: @nav-position-hidden}
-  100% { margin-right: @nav-position-visible}
+  0%   { margin-left: @nav-position-hidden}
+  100% { margin-left: @nav-position-visible}
 }
 @-o-keyframes SHOW-NAV-ANIMATION {
-  0%   { margin-right: @nav-position-hidden}
-  100% { margin-right: @nav-position-visible}
+  0%   { margin-left: @nav-position-hidden}
+  100% { margin-left: @nav-position-visible}
 }
 @keyframes SHOW-NAV-ANIMATION {
-  0%   { margin-right: @nav-position-hidden}
-  100% { margin-right: @nav-position-visible}
+  0%   { margin-left: @nav-position-hidden}
+  100% { margin-left: @nav-position-visible}
 }
 
 .main-nav.hide {
+  display: block !important;
   -webkit-animation: HIDE-NAV-ANIMATION @nav-animation-period; /* Safari 4+ */
   -moz-animation:    HIDE-NAV-ANIMATION @nav-animation-period; /* Fx 5+ */
   -o-animation:      HIDE-NAV-ANIMATION @nav-animation-period; /* Opera 12+ */
@@ -131,20 +132,20 @@
 }
 
 @-webkit-keyframes HIDE-NAV-ANIMATION {
-  0%   { margin-right: @nav-position-visible}
-  100% { margin-right: @nav-position-hidden}
+  0%   { margin-left: @nav-position-visible}
+  100% { margin-left: @nav-position-hidden}
 }
 @-moz-keyframes HIDE-NAV-ANIMATION {
-  0%   { margin-right: @nav-position-visible}
-  100% { margin-right: @nav-position-hidden}
+  0%   { margin-left: @nav-position-visible}
+  100% { margin-left: @nav-position-hidden}
 }
 @-o-keyframes HIDE-NAV-ANIMATION {
-  0%   { margin-right: @nav-position-visible}
-  100% { margin-right: @nav-position-hidden}
+  0%   { margin-left: @nav-position-visible}
+  100% { margin-left: @nav-position-hidden}
 }
 @keyframes HIDE-NAV-ANIMATION {
-  0%   { margin-right: @nav-position-visible}
-  100% { margin-right: @nav-position-hidden}
+  0%   { margin-left: @nav-position-visible}
+  100% { margin-left: @nav-position-hidden}
 }
 
 
@@ -154,49 +155,59 @@
   top: 30%;
 
   .why {
-    margin-right: -265px;
     opacity: 0;
 
     position: fixed;
-    right: 0px;
-    -ms-transform: rotate(-60deg);
-    -webkit-transform: rotate(-60deg);
-    transform: rotate(-60deg);
+    left: 0px;
+    -ms-transform: rotate(65deg);
+    -webkit-transform: rotate(65deg);
+    transform: rotate(65deg);
   }
 
   .about {
-    margin-right: -265px;
     position: fixed;
-    right: 0px;
+    left: 0px;
     opacity: 0;
+
+    height: 400px;
+
+    -ms-transform: rotate(90deg);
+    -webkit-transform: rotate(90deg);
+    transform: rotate(90deg);
   }
 
   .skills {
-    margin-right: -265px;
     opacity: 0;
 
     position: fixed;
-    right: 0px;
-    -ms-transform: rotate(-60deg);
-    -webkit-transform: rotate(-60deg);
-    transform: rotate(-60deg);
+    left: 0px;
+    -ms-transform: rotate(60deg);
+    -webkit-transform: rotate(60deg);
+    transform: rotate(60deg);
   }
 
   .experience {
-    margin-right: -265px;
     opacity: 0;
+    height: 600px;
+    margin-top: 50px;
 
     position: fixed;
-    right: 0px;
-    -ms-transform: rotate(-45deg);
-    -webkit-transform: rotate(-45deg);
-    transform: rotate(-45deg);
+    left: 0px;
+    -ms-transform: rotate(45deg);
+    -webkit-transform: rotate(45deg);
+    transform: rotate(45deg);
   }
 
   .menu-img-slide {
-    margin-right: -265px;
     position: fixed;
-    right: 0px;
+    left: 0px;
     opacity: 0;
+  }
+
+  @media screen and (max-width: 550px) {
+    .about {
+      height: 300px;
+      left: -100px;
+    }
   }
 }
