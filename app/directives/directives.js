@@ -61,7 +61,6 @@
             $(elm).mouseleave(function () {
                 var self = $(this);
                 isMouseOver = false;
-
                 setTimeout(function () {
                     if (!isMouseOver) {
                         self.addClass('collapsed hide').removeClass('shown show');

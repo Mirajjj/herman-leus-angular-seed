@@ -3,6 +3,22 @@
   width: 100% !important;
 }
 
+.home-contacts {
+  position: absolute;
+  right: 0;
+  margin-right: 100px;
+  margin-top: 50px;
+
+  .glyphicon {
+    font-size: 18px;
+    margin-right: 10px;
+
+  }
+  span {
+    font-size: 20px;
+  }
+}
+
 .page-header {
   font-family: 'NeueHelveticaBold';
   position: absolute;
@@ -95,6 +111,7 @@
   background: @color-1;
   color: #fff;
   font-family: 'NeueHelveticaLight';
+  padding-bottom: 100px;
 
   .header, .footer {
     text-align: center;
@@ -135,10 +152,34 @@
         text-transform: uppercase;
         margin-bottom: 5px;
         position: absolute;
+        background: #fff;
+        color: @color-1;
+        padding-left: 15px;
+        padding-right: 15px;
       }
 
       p.top {
         margin-top: -45px;
+      }
+
+      p.creative {
+        margin-left: -30px;
+      }
+
+      p.passionate {
+        margin-left: -55px;
+      }
+
+      p.hardworking {
+        margin-left: -80px;
+      }
+
+      p.responsible {
+        margin-left: -65px;
+      }
+
+      p.handsome {
+        margin-left: -45px;
       }
 
       p.bottom {
@@ -167,9 +208,28 @@
   }
 }
 
-.about-block {
-  overflow: hidden;
-  video#videoBackground {
+.home-skills-block {
+  background: @color-4;
+  padding-top: 0px;
+  padding-bottom: 100px;
+  color: @color-9;
+  border-top:10px solid @color-9;
+  text-align: center;
+  
+  h1 {
+    font-family: 'NeueHelveticaBold';
+    font-size: 60px;
+    letter-spacing: 5px;
+    text-align: center;
+    text-transform: uppercase;
+    display: inline-block;
+  }
 
+  .header {
+    text-align: center;
+
+    image {
+      display: inline-block;
+    }
   }
 }
