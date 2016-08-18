@@ -3,7 +3,7 @@
 .main-nav {
   position: fixed;
   top: 0;
-  z-index: 2;
+  z-index: 9999;
   left: 0;
   background: #fcfcfc;
   height: 100%;
@@ -13,10 +13,11 @@
     left: 172px;
     top: 25%;
     position: absolute;
-    z-index: -1;
+    z-index: 9998;
   }
 
   .img-block{
+    position: relative;
     padding: 10px;
 
     .img-container {
@@ -149,8 +150,8 @@
 }
 
 
-
 .menu-images {
+  z-index: 9998;
   position: fixed;
   top: 30%;
 

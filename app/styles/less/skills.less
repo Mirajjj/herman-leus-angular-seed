@@ -1,0 +1,79 @@
+
+.home-skills-block {
+  display: block;
+  padding: 80px 0 300px;
+
+  .red-sun {
+    position: absolute;
+    margin-left: -270px;
+    margin-top: -80px;
+    width: 230px;
+    height: 230px;
+    border-radius: 230px;
+    background: #ff0000;
+    z-index: 0;
+  }
+
+
+  @ninja-animation-period: 5s;
+  @ninja-start-vertical-position: -300px;
+  @ninja-end-vertical-position: -90px;
+  @ninja-start-horizontal-position: -300px;
+  @ninja-end-horizontal-position: -305px;
+
+  .ninja {
+    margin-left: @ninja-start-horizontal-position;
+    margin-top:  @ninja-start-vertical-position;
+    position: absolute;
+    z-index: 1;
+    -webkit-transition: margin-left @ninja-animation-period, margin-top  @ninja-animation-period; /* Safari */
+    transition: margin-left  @ninja-animation-period, margin-top  @ninja-animation-period;
+  }
+
+  .ninja.animated {
+    -webkit-animation: NINJA-ANIMATION @ninja-animation-period; 
+    -moz-animation:    NINJA-ANIMATION @ninja-animation-period; 
+    -o-animation:      NINJA-ANIMATION @ninja-animation-period; 
+    animation:         NINJA-ANIMATION @ninja-animation-period; 
+
+    animation-iteration-count: infinite;
+    animation-timing-function: ease;
+  }
+
+  @-webkit-keyframes NINJA-ANIMATION {
+    0%   { margin-left: @ninja-start-horizontal-position; margin-top: @ninja-start-vertical-position; }
+    50%  { margin-left: @ninja-end-horizontal-position; margin-top: @ninja-end-vertical-position; }
+    90%  { margin-left: @ninja-end-horizontal-position; margin-top: @ninja-end-vertical-position; }
+    100% { margin-left: @ninja-start-horizontal-position; margin-top: @ninja-start-vertical-position; }
+  }
+  @-moz-keyframes NINJA-ANIMATION {
+    0%   { margin-left: @ninja-start-horizontal-position; margin-top: @ninja-start-vertical-position; }
+    50%  { margin-left: @ninja-end-horizontal-position; margin-top: @ninja-end-vertical-position; }
+    90%  { margin-left: @ninja-end-horizontal-position; margin-top: @ninja-end-vertical-position; }
+    100% { margin-left: @ninja-start-horizontal-position; margin-top: @ninja-start-vertical-position; }
+  }
+  @-o-keyframes NINJA-ANIMATION {
+    0%   { margin-left: @ninja-start-horizontal-position; margin-top: @ninja-start-vertical-position; }
+    50%  { margin-left: @ninja-end-horizontal-position; margin-top: @ninja-end-vertical-position; }
+    90%  { margin-left: @ninja-end-horizontal-position; margin-top: @ninja-end-vertical-position; }
+    100% { margin-left: @ninja-start-horizontal-position; margin-top: @ninja-start-vertical-position; }
+  }
+  @keyframes NINJA-ANIMATION {
+     0%   { margin-left: @ninja-start-horizontal-position; margin-top: @ninja-start-vertical-position; }
+    50%  { margin-left: @ninja-end-horizontal-position; margin-top: @ninja-end-vertical-position; }
+    90%  { margin-left: @ninja-end-horizontal-position; margin-top: @ninja-end-vertical-position; }
+    100% { margin-left: @ninja-start-horizontal-position; margin-top: @ninja-start-vertical-position; }
+  }
+
+  .heading {
+    z-index: 0;
+  }
+
+  svg {
+    .x.axis,
+    .y.axis {
+      fill: none;
+      stroke: #000;
+    }
+  }
+}
